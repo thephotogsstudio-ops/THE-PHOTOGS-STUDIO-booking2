@@ -850,7 +850,8 @@
             
             if (totalQty === 1) {
                 allTimeSlots.forEach(slot => {
-                    const div = createTimeSlotElement(slot, date, false);
+                    const isAvailable = checkConsecutiveAvailability(date, [slot]);
+                    const div = createTimeSlotElement(slot, date, !isAvailable, [slot]);
                     container.appendChild(div);
                 });
             } else {
