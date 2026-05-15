@@ -1223,7 +1223,7 @@
                             packageA: parseInt(b.packageA) || 0,
                             packageB: parseInt(b.packageB) || 0,
                             packageTotal: parseInt(b.packageTotal) || 0,
-                            date: b.date,
+                            date: (b.date && b.date.includes("-")) ? b.date : (b.date ? new Date(b.date).toISOString().split("T")[0] : ""),
                             timeSlot: b.timeSlot,
                             slots: b.slots ? (Array.isArray(b.slots) ? b.slots : b.slots.split(',').map(s => s.trim()).filter(s => s)) : [],
                             name: b.name,
