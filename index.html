@@ -1044,8 +1044,13 @@
         function displayBookings(filterPhone) {
             const container = document.getElementById('bookingsList');
             
+            // 沒帶電話時，自動讀取電話欄位的現有值
             if (!filterPhone) {
-                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">請輸入手機號碼查詢您的預約</p>';
+                filterPhone = document.getElementById('customerPhone').value.trim();
+            }
+
+            if (!filterPhone) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">請在上方填寫手機號碼以查看預約紀錄</p>';
                 return;
             }
 
