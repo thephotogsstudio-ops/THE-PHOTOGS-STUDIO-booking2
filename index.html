@@ -658,6 +658,17 @@
                     <span>訂金 Deposit：</span>
                     <span style="font-size: 20px;">$500</span>
                 </div>
+                <div style="margin-top: 15px; background: #FFF0E0; border: 1px solid #E8D5C4; border-radius: 10px; padding: 15px;">
+                    <div style="color: #8B6F47; font-size: 13px; font-weight: bold; margin-bottom: 10px;">🏦 訂金匯款資訊</div>
+                    <div style="color: #555; font-size: 14px; line-height: 2;">
+                        <div>銀行：臺灣銀行</div>
+                        <div>戶名：張智鈞</div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span>帳號：009008853944</span>
+                            <button onclick="copyAccount()" id="copyBtn" style="padding: 4px 12px; background: #C08552; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all 0.2s;">複製</button>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <button class="submit-btn" onclick="submitBooking()">
@@ -1317,6 +1328,18 @@
             }
         }
         
+        function copyAccount() {
+            navigator.clipboard.writeText('009008853944').then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✅ 已複製';
+                btn.style.background = '#4CAF50';
+                setTimeout(() => {
+                    btn.textContent = '複製';
+                    btn.style.background = '#C08552';
+                }, 2000);
+            });
+        }
+
         window.onload = init;
     </script>
 </body>
