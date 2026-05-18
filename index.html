@@ -628,7 +628,7 @@
             
             <div class="form-group">
                 <label>📱 聯絡電話：</label>
-                <input type="tel" id="customerPhone" placeholder="請輸入手機號碼">
+                <input type="tel" id="customerPhone" placeholder="請輸入手機號碼" oninput="displayBookings(this.value.trim())">
             </div>
             
             <div class="form-group">
@@ -681,8 +681,11 @@
         <div class="divider"></div>
         
         <div class="bookings-list">
-            <h2 style="color: #C08552; margin-bottom: 20px;">📋 目前預約 Current Bookings</h2>
-            <div id="bookingsList"></div>
+            <h2 style="color: #C08552; margin-bottom: 20px;">📋 我的預約紀錄</h2>
+            <p style="color: #999; margin-bottom: 15px; font-size: 14px;">📱 在上方表單輸入手機號碼後，您的預約紀錄會自動顯示在這裡</p>
+            <div id="bookingsList">
+                <p style="color: #999; text-align: center; padding: 30px;">請在上方填寫手機號碼以查看預約紀錄</p>
+            </div>
         </div>
     </div>
 
@@ -970,7 +973,10 @@
             
             saveToGoogleSheets(booking);
             showPaymentInfo(booking);
+            // 預約完成後自動帶入電話並顯示預約
+            document.getElementById("searchPhone").value = booking.phone;
             resetForm();
+            displayBookings(booking.phone);
         }
         
         function showPaymentInfo(booking) {
@@ -984,8 +990,17 @@
                 (booking.packageA > 0 ? `方案A × ${booking.packageA} ` : '') +
                 (booking.packageB > 0 ? `方案B × ${booking.packageB}` : '');
             
-            alert(`✅ 預約成功！
+            alert(`⚠️ 預約尚未完成！
 
+您的時段已暫時保留，但需完成以下步驟才算完成預約：
+
+第一步：於 48 小時內完成訂金匯款
+第二步：回到頁面下方輸入手機號碼查詢預約
+第三步：點擊「填寫帳號後五碼」完成確認
+
+完成後我們會與您聯繫，才算正式預約成功！
+
+─────────────────────
 📋 預約編號：#${booking.id}
 
 🏢 分店：${booking.store}
@@ -999,17 +1014,12 @@
 💰 總金額：NT$ ${booking.total.toLocaleString()}
 💵 訂金：NT$ 500
 
-⚠️ 請於 48 小時內完成訂金匯款
-
+─────────────────────
 🏦 匯款資訊：
 銀行：XXX 銀行（請填寫實際銀行資訊）
 戶名：THE PHOTOGS STUDIO
 帳號：012-3456-7890
-
-📝 匯款完成後，請在「目前預約」中
-點擊您的預約，填寫帳號後五碼
-
-我們會盡快與您聯繫確認！`);
+─────────────────────`);
         }
         
         function resetForm() {
@@ -1031,15 +1041,22 @@
             updatePrice();
         }
         
-        function displayBookings() {
+        function displayBookings(filterPhone) {
             const container = document.getElementById('bookingsList');
             
-            if (bookings.length === 0) {
-                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">目前沒有預約</p>';
+            if (!filterPhone) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">請輸入手機號碼查詢您的預約</p>';
+                return;
+            }
+
+            const filtered = bookings.filter(b => b.phone && b.phone.replace(/\s/g, "") === filterPhone.replace(/\s/g, ""));
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">查無此電話號碼的預約紀錄</p>';
                 return;
             }
             
-            container.innerHTML = bookings.map(booking => {
+            container.innerHTML = filtered.map(booking => {
                 const packageText = 
                     (booking.packageA > 0 ? `方案A×${booking.packageA} ` : '') +
                     (booking.packageB > 0 ? `方案B×${booking.packageB}` : '');
