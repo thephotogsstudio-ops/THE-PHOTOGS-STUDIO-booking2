@@ -3,7 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE PHOTOGS STUDIO - 線上預約系統</title>
+    <title>THE PHOTOGS STUDIO｜台中、台南自助攝影棚 線上預約</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="THE PHOTOGS STUDIO｜台中、台南專業自助攝影棚，寵物友善，提供雙人、家庭及團體拍攝方案，含修圖與沖印，當日取件。">
+    <meta name="keywords" content="自助攝影棚,台中自助攝影,台南自助攝影,台中攝影棚,台南攝影棚,閨蜜寫真,家庭寫真,寵物友善攝影棚,寵物寫真">
+    <meta name="author" content="THE PHOTOGS STUDIO">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph（LINE、Facebook 分享預覽）-->
+    <meta property="og:title" content="THE PHOTOGS STUDIO｜台中、台南自助攝影棚">
+    <meta property="og:description" content="寵物友善！提供雙人、家庭及團體拍攝方案，含修圖與沖印，當日取件。立即線上預約！">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://thephotogsstudio-ops.github.io/THE-PHOTOGS-STUDIO-booking2/">
+    <meta property="og:image" content="https://thephotogsstudio-ops.github.io/THE-PHOTOGS-STUDIO-booking2/package-b.jpg">
+    <meta property="og:locale" content="zh_TW">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="THE PHOTOGS STUDIO｜台中、台南自助攝影棚">
+    <meta name="twitter:description" content="寵物友善！提供雙人、家庭及團體拍攝方案，含修圖與沖印，當日取件。">
+    <meta name="twitter:image" content="https://thephotogsstudio-ops.github.io/THE-PHOTOGS-STUDIO-booking2/package-b.jpg">
     <style>
         * {
             margin: 0;
@@ -82,8 +102,9 @@
         
         .store-card.selected {
             border-color: #BF5931;
-            background: #EAE7E2;
-            box-shadow: 0 10px 30px rgba(192, 133, 82, 0.3);
+            border-width: 4px;
+            background: #F5DDD4;
+            box-shadow: 0 10px 30px rgba(191, 89, 49, 0.35);
         }
         
         .store-icon {
@@ -711,12 +732,20 @@
         </div>
         
         <div class="divider"></div>
-        
+
+        <!-- 獨立查詢區塊 -->
+        <div style="background: white; border: 2px solid #D9D3CB; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
+            <h2 style="color: #BF5931; margin-bottom: 8px;">📋 查詢我的預約</h2>
+            <p style="color: #999; font-size: 14px; margin-bottom: 15px;">已完成預約的客人，輸入手機號碼即可查看預約紀錄</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="tel" id="queryPhone" placeholder="請輸入手機號碼" style="flex: 1; padding: 12px; border: 2px solid #D9D3CB; border-radius: 8px; font-size: 16px; background: #EAE7E2;">
+                <button onclick="queryBookings()" style="padding: 12px 24px; background: linear-gradient(135deg, #BF5931 0%, #A0461F 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; white-space: nowrap;">🔍 查詢</button>
+            </div>
+        </div>
+
         <div class="bookings-list">
-            <h2 style="color: #BF5931; margin-bottom: 20px;">📋 我的預約紀錄</h2>
-            <p style="color: #999; margin-bottom: 15px; font-size: 14px;">📱 在上方表單輸入手機號碼後，您的預約紀錄會自動顯示在這裡</p>
             <div id="bookingsList">
-                <p style="color: #999; text-align: center; padding: 30px;">請在上方填寫手機號碼以查看預約紀錄</p>
+                <p style="color: #999; text-align: center; padding: 30px;">請輸入手機號碼查詢您的預約紀錄</p>
             </div>
         </div>
     </div>
@@ -1347,6 +1376,17 @@
             }
         }
         
+        function queryBookings() {
+            const phone = document.getElementById('queryPhone').value.trim();
+            if (!phone) {
+                alert('❌ 請輸入手機號碼');
+                return;
+            }
+            displayBookings(phone);
+            // 滑動到結果
+            document.getElementById('bookingsList').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function copyIG() {
             navigator.clipboard.writeText('the.photogs.studio').then(() => {
                 const btn = document.getElementById('copyIGBtn');
