@@ -1370,17 +1370,7 @@
                     body: JSON.stringify(data)
                 });
 
-                // 額外用 GET 方式觸發 Calendar（繞過 no-cors 限制）
-                if (updates.status === '已付款') {
-                    const params = new URLSearchParams({
-                        action: 'calendarUpdate',
-                        id: bookingId.toString()
-                    });
-                    await fetch(GOOGLE_SCRIPT_URL + '?' + params.toString(), {
-                        method: 'GET',
-                        mode: 'no-cors'
-                    });
-                }
+
                 
                 console.log('✅ 狀態已更新到 Google Sheets');
             } catch (error) {
