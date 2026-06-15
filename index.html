@@ -1016,8 +1016,7 @@
             minDateCheck.setHours(0, 0, 0, 0);
             const selectedDateCheck = new Date(date);
             selectedDateCheck.setHours(0, 0, 0, 0);
-            if (selectedDateCheck < minDateCheck) { alert('❌ 預約需至少提前 7 天
-如需預約 7 天內的時段，請私訊 Instagram：@the.photogs.studio'); return; }
+            if (selectedDateCheck < minDateCheck) { alert('❌ 預約需至少提前 7 天\n如需預約 7 天內的時段，請私訊 Instagram：@the.photogs.studio'); return; }
 
             if (!selectedTimeSlot) { alert('❌ 請選擇時段'); return; }
             if (!name || !phone) { alert('❌ 請填寫姓名和電話'); return; }
