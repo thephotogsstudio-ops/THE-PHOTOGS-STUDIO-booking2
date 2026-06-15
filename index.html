@@ -786,7 +786,7 @@
             
             const today = new Date();
             const minDate = new Date();
-            minDate.setDate(today.getDate() + 3);
+            minDate.setDate(today.getDate() + 7);
             const maxDate = new Date();
             maxDate.setDate(today.getDate() + 60);
             
@@ -805,6 +805,14 @@
                 card.classList.remove('selected');
             });
             event.target.closest('.store-card').classList.add('selected');
+
+            // 根據分店動態更新日期最小值
+            const minDaysMap = { '台中店': 7, '台南店': 7 };
+            const minDays = minDaysMap[store] || 7;
+            const minDate = new Date();
+            minDate.setDate(minDate.getDate() + minDays);
+            document.getElementById('bookingDate').min = minDate.toISOString().split('T')[0];
+            document.getElementById('bookingDate').value = '';
             
             loadTimeSlots();
         }
@@ -907,6 +915,23 @@
                 infoDiv.innerHTML = '<span style="color: #999;">❌ 請先選擇日期</span>';
                 return;
             }
+
+            // 依分店設定最少提前天數
+            const minDaysMap = { '台中店': 7, '台南店': 7 };
+            const minDays = minDaysMap[selectedStore] || 7;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const minDate = new Date();
+            minDate.setDate(today.getDate() + minDays);
+            minDate.setHours(0, 0, 0, 0);
+            const selectedDate = new Date(date);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate < minDate) {
+                infoDiv.innerHTML = `<span style="color: #D32F2F;">❌ 預約需至少提前 7 天<br>如需預約 7 天內的時段，請私訊 Instagram：<a href="https://www.instagram.com/the.photogs.studio" target="_blank" style="color: #BF5931; font-weight: bold;">@the.photogs.studio</a></span>`;
+                container.innerHTML = '';
+                return;
+            }
             
             infoDiv.innerHTML = `<span style="color: #BF5931; font-weight: bold;">
                 ✅ 需要 ${totalQty} 個連續時段，請選擇起始時段
@@ -980,6 +1005,20 @@
             const totalQty = quantities.A + quantities.B;
             if (totalQty === 0) { alert('❌ 請選擇方案'); return; }
             if (!date) { alert('❌ 請選擇日期'); return; }
+
+            // 再次驗證日期（依分店）
+            const minDaysMapCheck = { '台中店': 7, '台南店': 7 };
+            const minDaysCheck = minDaysMapCheck[selectedStore] || 7;
+            const todayCheck = new Date();
+            todayCheck.setHours(0, 0, 0, 0);
+            const minDateCheck = new Date();
+            minDateCheck.setDate(todayCheck.getDate() + minDaysCheck);
+            minDateCheck.setHours(0, 0, 0, 0);
+            const selectedDateCheck = new Date(date);
+            selectedDateCheck.setHours(0, 0, 0, 0);
+            if (selectedDateCheck < minDateCheck) { alert('❌ 預約需至少提前 7 天
+如需預約 7 天內的時段，請私訊 Instagram：@the.photogs.studio'); return; }
+
             if (!selectedTimeSlot) { alert('❌ 請選擇時段'); return; }
             if (!name || !phone) { alert('❌ 請填寫姓名和電話'); return; }
             
