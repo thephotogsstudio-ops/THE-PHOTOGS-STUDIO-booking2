@@ -803,14 +803,14 @@
             
             document.querySelectorAll('.store-card').forEach(card => {
                 card.classList.remove('selected');
+                if (card.querySelector('.store-name') && card.querySelector('.store-name').textContent.trim() === store) {
+                    card.classList.add('selected');
+                }
             });
-            event.target.closest('.store-card').classList.add('selected');
 
             // 根據分店動態更新日期最小值
-            const minDaysMap = { '台中店': 7, '台南店': 7 };
-            const minDays = minDaysMap[store] || 7;
             const minDate = new Date();
-            minDate.setDate(minDate.getDate() + minDays);
+            minDate.setDate(minDate.getDate() + 7);
             document.getElementById('bookingDate').min = minDate.toISOString().split('T')[0];
             document.getElementById('bookingDate').value = '';
             
