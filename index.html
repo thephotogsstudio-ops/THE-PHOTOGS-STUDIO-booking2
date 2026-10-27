@@ -664,12 +664,12 @@
             
             <div class="form-group">
                 <label>👤 您的姓名：</label>
-                <input type="text" id="customerName" placeholder="請輸入姓名">
+                <input type="text" id="customerName" placeholder="請輸入姓名" oninput="displayBookings(this.value.trim())">
             </div>
             
             <div class="form-group">
                 <label>📱 聯絡電話：</label>
-                <input type="tel" id="customerPhone" placeholder="請輸入手機號碼" oninput="displayBookings(this.value.trim())">
+                <input type="tel" id="customerPhone" placeholder="請輸入手機號碼">
             </div>
             
             <div class="form-group">
@@ -736,16 +736,16 @@
         <!-- 獨立查詢區塊 -->
         <div style="background: white; border: 2px solid #D9D3CB; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
             <h2 style="color: #BF5931; margin-bottom: 8px;">📋 查詢我的預約</h2>
-            <p style="color: #999; font-size: 14px; margin-bottom: 15px;">已完成預約的客人，輸入手機號碼即可查看預約紀錄</p>
+            <p style="color: #999; font-size: 14px; margin-bottom: 15px;">已完成預約的客人，輸入姓名即可查看預約紀錄</p>
             <div style="display: flex; gap: 10px;">
-                <input type="tel" id="queryPhone" placeholder="請輸入手機號碼" style="flex: 1; padding: 12px; border: 2px solid #D9D3CB; border-radius: 8px; font-size: 16px; background: #EAE7E2;">
+                <input type="text" id="queryName" placeholder="請輸入姓名" style="flex: 1; padding: 12px; border: 2px solid #D9D3CB; border-radius: 8px; font-size: 16px; background: #EAE7E2;">
                 <button onclick="queryBookings()" style="padding: 12px 24px; background: linear-gradient(135deg, #BF5931 0%, #A0461F 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; white-space: nowrap;">🔍 查詢</button>
             </div>
         </div>
 
         <div class="bookings-list">
             <div id="bookingsList">
-                <p style="color: #999; text-align: center; padding: 30px;">請輸入手機號碼查詢您的預約紀錄</p>
+                <p style="color: #999; text-align: center; padding: 30px;">請輸入姓名查詢您的預約紀錄</p>
             </div>
         </div>
     </div>
@@ -933,6 +933,18 @@
                 return;
             }
             
+            // 檢查是否在暫停預約期間
+            const closures = JSON.parse(localStorage.getItem('photogs_closures') || '[]');
+            const isClosed = closures.some(c => {
+                return c.store === selectedStore && date >= c.start && date <= c.end;
+            });
+
+            if (isClosed) {
+                infoDiv.innerHTML = `<span style="color: #D32F2F; font-weight: bold;">❌ 此日期 ${selectedStore} 暫停接受預約<br>如有需要請私訊 Instagram：<a href="https://www.instagram.com/the.photogs.studio" target="_blank" style="color: #BF5931;">@the.photogs.studio</a></span>`;
+                container.innerHTML = '';
+                return;
+            }
+
             infoDiv.innerHTML = `<span style="color: #BF5931; font-weight: bold;">
                 ✅ 需要 ${totalQty} 個連續時段，請選擇起始時段
             </span>`;
@@ -1072,10 +1084,9 @@
             
             saveToGoogleSheets(booking);
             showPaymentInfo(booking);
-            // 預約完成後自動帶入電話並顯示預約
-            document.getElementById("searchPhone").value = booking.phone;
+            // 預約完成後自動顯示預約
             resetForm();
-            displayBookings(booking.phone);
+            displayBookings(booking.name);
         }
         
         function showPaymentInfo(booking) {
@@ -1092,7 +1103,7 @@
             alert(`⚠️ 時段已保留，請完成以下步驟完成預約：
 
 第一步：於 48 小時內匯款訂金 NT$500
-第二步：回到頁面下方輸入手機號碼查詢預約
+第二步：回到頁面下方輸入姓名查詢預約
 第三步：點擊「填寫帳號後五碼」
 
 完成後五碼即完成預約！
@@ -1138,23 +1149,23 @@
             updatePrice();
         }
         
-        function displayBookings(filterPhone) {
+        function displayBookings(filterName) {
             const container = document.getElementById('bookingsList');
-            
-            // 沒帶電話時，自動讀取電話欄位的現有值
-            if (!filterPhone) {
-                filterPhone = document.getElementById('customerPhone').value.trim();
+
+            // 沒帶姓名時，自動讀取姓名欄位的現有值
+            if (!filterName) {
+                filterName = document.getElementById('customerName').value.trim();
             }
 
-            if (!filterPhone) {
-                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">請在上方填寫手機號碼以查看預約紀錄</p>';
+            if (!filterName) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">請在上方填寫姓名以查看預約紀錄</p>';
                 return;
             }
 
-            const filtered = bookings.filter(b => b.phone && b.phone.replace(/\s/g, "") === filterPhone.replace(/\s/g, ""));
+            const filtered = bookings.filter(b => b.name && b.name.toLowerCase().includes(filterName.toLowerCase()));
 
             if (filtered.length === 0) {
-                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">查無此電話號碼的預約紀錄</p>';
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 30px;">查無此姓名的預約紀錄</p>';
                 return;
             }
             
@@ -1417,12 +1428,12 @@
         }
         
         function queryBookings() {
-            const phone = document.getElementById('queryPhone').value.trim();
-            if (!phone) {
-                alert('❌ 請輸入手機號碼');
+            const name = document.getElementById('queryName').value.trim();
+            if (!name) {
+                alert('❌ 請輸入姓名');
                 return;
             }
-            displayBookings(phone);
+            displayBookings(name);
             // 滑動到結果
             document.getElementById('bookingsList').scrollIntoView({ behavior: 'smooth' });
         }
